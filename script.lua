@@ -1,39 +1,23 @@
--- 1. Cargar la librería WindUI
-local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/main.lua"))()
+-- Bloque principal de carga
+local success, err = pcall(function()
+    local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/main.lua"))()
 
--- 2. Crear la ventana principal
-local Window = WindUI:CreateWindow({
-    Title = "NOMBRE DE TU HUB",
-    Icon = "rbxassetid://1234567890", -- Cambia esto por el ID de tu logo
-    Resizable = true,
-    Size = UDim2.fromOffset(580, 460),
-    Transparency = 0.5,
-})
+    local Window = WindUI:CreateWindow({
+        Title = "JBAS PAPI HUB",
+        Icon = "rbxassetid://10723343450", -- Pon aquí el ID de tu logo
+        Resizable = true,
+        Size = UDim2.fromOffset(580, 460),
+        Transparency = 0.5,
+    })
 
--- 3. Crear una pestaña (Tab)
-local Tab = Window:AddTab({
-    Title = "INICIO",
-    Icon = "rbxassetid://..." -- Opcional
-})
+    -- Ejemplo: Pestaña de estadísticas
+    local StatsTab = Window:AddTab({Title = "STATS"})
+    StatsTab:AddLabel("Dinero en banco: " .. game.Players.LocalPlayer.leaderstats.Money.Value)
 
--- 4. Agregar contenido a la pestaña
-local Section = Tab:AddSection("Funciones Principales")
+    -- Aquí iría el resto de tu código...
+end)
 
-Section:AddButton({
-    Title = "Mi primer botón",
-    Callback = function()
-        print("Botón presionado")
-    end
-})
-
--- 5. Ejemplo de un Toggle (Interruptor)
-Section:AddToggle({
-    Title = "Activar hack",
-    Callback = function(state)
-        if state then
-            print("Activado")
-        else
-            print("Desactivado")
-        end
-    end
-})
+if not success then
+    -- Si falla, que te avise en la consola del ejecutor
+    warn("El Hub falló al cargar: " .. tostring(err))
+end
