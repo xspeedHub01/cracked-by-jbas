@@ -36,7 +36,8 @@ pcall(function() CrateController = require(ReplicatedStorage.Modules.Game.CrateS
 print("Morty Hub Leaked by Cypher https://discord.gg/b8QsvrMCNq")
 
 -- FIX PARA DELTA (agrega aquí)
-pcall(function() game:GetService("ScriptContext"):SetTimeout(0.2) end)
+print
+
 
 local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
