@@ -35,7 +35,7 @@ pcall(function() CrateController = require(ReplicatedStorage.Modules.Game.CrateS
 -- ── Local Player ──────────────────────────────────────────────
 print("Morty Hub Leaked by Cypher https://discord.gg/b8QsvrMCNq")
 
--- FIX PARA DELTA (print)
+-- print
 pcall(function() game:GetService("ScriptContext").Error:Connect(function() end) end)
 
 
