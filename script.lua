@@ -1,30 +1,46 @@
--- Morty Hub v2.6 - Versión Reparada para Delta
-local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/lerkermer/lua-projects/master/WindUI/Main.lua"))()
-local Window = WindUI:CreateWindow({Title = "Morty Hub v2.6", Icon = "rbxassetid://6031257405", Width = 400})
+-- ESP Completo y Adaptado para Delta
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = game:GetService("Workspace").CurrentCamera
+local LocalPlayer = Players.LocalPlayer
 
--- Servicios
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local function createESP(player)
+    -- Crear elementos visuales
+    local nameTag = Drawing.new("Text")
+    nameTag.Size = 16
+    nameTag.Center = true
+    nameTag.Color = Color3.fromRGB(255, 255, 255)
+    nameTag.Outline = true
+    nameTag.Visible = false
 
--- Definir módulos como tablas vacías para evitar errores si no existen
-local Util, BuyPromptUI, EmotesUI, EmotesList = {}, {}, {}, {}
-
--- Intentar cargar módulos de forma segura
-pcall(function() Util = require(ReplicatedStorage.Modules.Core.Util) end)
-pcall(function() BuyPromptUI = require(ReplicatedStorage.Modules.Game.UI.BuyPromptUI) end)
-pcall(function() EmotesUI = require(ReplicatedStorage.Modules.Game.Emotes.EmotesUI) end)
-pcall(function() EmotesList = require(ReplicatedStorage.Modules.Game.Emotes.EmotesList) end)
-
--- Crear la pestaña de Configuración
-if Window then
-    local ConfigTab = Window:Tab({ Title = "CONFIG", Icon = "save" })
-    ConfigTab:Section({ Title = "Panel de Control" })
-    
-    ConfigTab:Button({
-        Title = "Probando conexión...",
-        Callback = function()
-            WindUI:Notify({ Title = "¡El script está vivo!", Duration = 3 })
+    RunService.RenderStepped:Connect(function()
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player ~= LocalPlayer then
+            local pos, onScreen = Camera:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
+            
+            if onScreen then
+                -- Nombre
+                nameTag.Position = Vector2.new(pos.X, pos.Y - 50)
+                nameTag.Text = player.Name
+                
+                -- Inventario (Intentamos leer un modelo equipado si existe)
+                -- Nota: Cambia "EquippedItem" por el nombre real de la carpeta/atributo en Blox Spin
+                local inv = player.Character:FindFirstChild("EquippedItem") 
+                if inv then
+                    nameTag.Text = player.Name .. "\n[" .. inv.Name .. "]"
+                end
+                
+                nameTag.Visible = true
+            else
+                nameTag.Visible = false
+            end
+        else
+            nameTag.Visible = false
         end
-    })
-    
-    WindUI:Notify({ Title = "Morty Hub cargado", Duration = 5 })
+    end)
 end
+
+-- Inicializar para todos
+for _, p in pairs(Players:GetPlayers()) do createESP(p) end
+Players.PlayerAdded:Connect(createESP)
+
+print("ESP Avanzado Cargado")
