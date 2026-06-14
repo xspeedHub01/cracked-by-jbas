@@ -76,14 +76,20 @@ if success and Net then
     local oldFire = Net.Fire
     Net.Fire = function(self, name, ...)
         local args = {...}
-        if SilentAimEnabled then
+        
+        -- Filtramos: solo actuamos si el evento es de disparo y tenemos argumentos
+        if SilentAimEnabled and args[1] then
+    print("Evento de disparo detectado: " .. tostring(name))
             local target = getClosestPlayer()
-            if target and target.Character then
-                args[1] = target.Character.HumanoidRootPart.Position
+            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                -- Solo cambiamos si el evento tiene la estructura correcta
+                if typeof(args[1]) == "Vector3" then
+                    args[1] = target.Character.HumanoidRootPart.Position
+                end
             end
         end
+        
         return oldFire(self, name, unpack(args))
     end
-else
-    warn("No se pudo conectar con el módulo Net.")
 end
+
