@@ -1,4 +1,8 @@
--- Leaked by Cypher | https://discord.gg/b8QsvrMCNq
+
+-- ENVUELVE TODO EL SCRIPT EN ESTO:
+task.spawn(function()
+    local success, err = pcall(function()
+        -- -- Leaked by Cypher | https://discord.gg/b8QsvrMCNq
 
 
 -- ============================================================
@@ -1901,3 +1905,11 @@ print(" MORTY HUB CARGADO EXITOSAMENTE SIN INTERFAZ ")
 print("Jugador: " .. game.Players.LocalPlayer.Name)
 print("Estado: Activo y esperando comandos")
 print("--------------------------------------------------")
+)
+    end)
+    
+    if not success then
+        -- Si falla, que no haga nada más y se quede callado
+        warn("Script inyectado en modo silencioso (sin interfaz)")
+    end
+end)
