@@ -19,6 +19,15 @@ local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
+-- Parche Delta para eliminar errores de UI
+WindUI = {
+    Notify = function() end,
+    Create = function() 
+        return {
+            Tab = function() return { Section = function() return { Button = function() end, Dropdown = function() end } end } end
+        } 
+    end
+}
 
 -- ── Remotes / Modules ────────────────────────────────────────
 local Remotes = ReplicatedStorage:WaitForChild("Remotes", 10)
