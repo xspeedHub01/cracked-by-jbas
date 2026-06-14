@@ -106,6 +106,45 @@ local TabConfig     = Window:Tab({ Title = "Config" })
 -- COMBAT
 TabCombat:Toggle({ Title = "Kill Aura", Callback = function(s) end })
 
+-- 1. Definimos la variable globalmente para que el botón la reconozca
+local fovRadius = 120
+local isMobile = UserInputService.TouchEnabled
+local fovCircle -- Esta variable guardará nuestro círculo
+
+-- 2. Creamos el FOV (Lógica que sacaste de la source)
+if not isMobile then
+    fovCircle = Drawing.new("Circle")
+    fovCircle.Color = Color3.fromRGB(255, 255, 255)
+    fovCircle.Thickness = 2
+    fovCircle.NumSides = 64
+    fovCircle.Filled = false
+    fovCircle.Transparency = 0.4
+    fovCircle.Radius = fovRadius
+    fovCircle.Visible = false
+else
+    local fovGui = Instance.new("ScreenGui")
+    fovGui.Name = "MobileFOV"; fovGui.ResetOnSpawn = false; fovGui.IgnoreGuiInset = true
+    fovGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    fovCircle = Instance.new("Frame")
+    fovCircle.Size = UDim2.fromOffset(fovRadius*2, fovRadius*2)
+    fovCircle.AnchorPoint = Vector2.new(0.5, 0.5)
+    fovCircle.Position = UDim2.fromScale(0.5, 0.5)
+    fovCircle.BackgroundTransparency = 1
+    Instance.new("UICorner", fovCircle).CornerRadius = UDim.new(1, 0)
+    local stroke = Instance.new("UIStroke", fovCircle)
+    stroke.Color = Color3.fromRGB(255,255,255); stroke.Thickness = 2; stroke.Transparency = 0.3
+    fovCircle.Parent = fovGui
+    fovCircle.Visible = false
+end
+TabCombat:Toggle({
+    Title = "Show FOV",
+    Callback = function(state)
+        if fovCircle then
+            fovCircle.Visible = state
+        end
+    end
+})
+
 -- MOVEMENT
 TabMovement:Slider({ Title = "WalkSpeed", Min = 16, Max = 100, Callback = function(v) 
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v 
