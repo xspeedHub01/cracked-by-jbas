@@ -54,5 +54,38 @@ local Tabs = {
 for name, tab in pairs(Tabs) do
     tab:Section({ Title = "● Estás en: " .. name })
 end
+-- ESP Universal para la pestaña Visual
+local ESP_Enabled = false
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+Tabs.Visual:Section({ Title = "ESP Settings" })
+
+Tabs.Visual:Toggle({
+    Title = "Show ESP",
+    Callback = function(state)
+        ESP_Enabled = state
+    end
+})
+
+-- Función interna del ESP
+RunService.RenderStepped:Connect(function()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local rootPart = player.Character.HumanoidRootPart
+            local vector, onScreen = workspace.CurrentCamera:WorldToViewportPoint(rootPart.Position)
+            
+            -- Aquí dibujaríamos si el ESP_Enabled es true
+            -- Nota: En móviles, dibujar cuadros complejos puede causar lag, 
+            -- pero esta lógica básica es la que alimenta cualquier ESP.
+            if ESP_Enabled and onScreen then
+                -- (Aquí iría la lógica de Drawing.new("Square"), 
+                -- pero para evitar que el script se cierre en Delta, 
+                -- empezaremos con un print de prueba)
+                -- print("ESP Activo para: " .. player.Name)
+            end
+        end
+    end
+end)
 
 Window:Show()
