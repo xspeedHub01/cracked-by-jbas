@@ -1,26 +1,24 @@
+-- Leaked by Cypher | https://discord.gg/b8QsvrMCNq
+
+
+-- ============================================================
+
+
 -- ══════════════════════════════════════════════════════════════
---  CARGA PROTEGIDA (MODIFICADO PARA EVITAR CRASHES)
+--  SERVICES
 -- ══════════════════════════════════════════════════════════════
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Debris = game:GetService("Debris")
+local Workspace = game:GetService("Workspace")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
--- Esperar a que el juego esté listo
-if not game:IsLoaded() then game.Loaded:Wait() end
-task.wait(2) -- Damos tiempo extra para que los assets carguen
-
--- Intentar cargar módulos de forma segura
-local function safeRequire(path)
-    local success, module = pcall(function() return require(path) end)
-    return success and module or nil
-end
-
--- Esperar a la carpeta Remotes con tiempo extendido
-local Remotes = ReplicatedStorage:WaitForChild("Remotes", 60) 
-
--- Cargar módulos ignorando errores si fallan
-local Util = safeRequire(ReplicatedStorage:FindFirstChild("Modules") and ReplicatedStorage.Modules.Core.Util)
--- ... (puedes dejar el resto igual, esto ya evitará que se detenga el script)
 
 -- ── Remotes / Modules ────────────────────────────────────────
 local Remotes = ReplicatedStorage:WaitForChild("Remotes", 10)
@@ -473,7 +471,57 @@ end
 -- ══════════════════════════════════════════════════════════════
 --  SILENT AIM HOOK
 -- ══════════════════════════════════════════════════════════════
-
+local SendRemote = Remotes:WaitForChild("Send")
+local originalFireServer
+pcall(function()
+    originalFireServer = hookfunction(SendRemote.FireServer, function(self, ...)
+        if self ~= SendRemote then return originalFireServer(self, ...) end
+        local args = { ... }
+        if silentAimEnabled and args[2] == "shoot_gun" and aimTarget and aimTarget.Character then
+            local head = aimTarget.Character:FindFirstChild("Head")
+            local root = aimTarget.Character:FindFirstChild("HumanoidRootPart")
+            local hum  = aimTarget.Character:FindFirstChild("Humanoid")
+            if head and root and hum then
+                local aimPos = predictPosition(head, root)
+                local myHead = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Head")
+                local originPos = myHead and myHead.Position or Camera.CFrame.Position
+                local function isShotgun()
+                    if not Character then return false end
+                    for _, tool in ipairs(Character:GetChildren()) do
+                        if tool:IsA("Tool") then
+                            local ammo = tool:GetAttribute("AmmoType")
+                            if ammo == "shotgun" or ammo == "shootgun" then return true end
+                        end
+                    end
+                    return false
+                end
+                if isShotgun() then
+                    args[4] = CFrame.new(originPos, aimPos)
+                    local pellets = {}
+                    for i = 1, 6 do
+                        local spread = Vector3.new(math.random(-2,2)*0.03, math.random(-2,2)*0.03, math.random(-2,2)*0.03)
+                        table.insert(pellets, { [1] = { Instance = head, Normal = Vector3.new(0,1,0), Position = aimPos + spread }})
+                    end
+                    args[5] = pellets
+                else
+                    local wallBlocked = isBehindWall(originPos, aimPos)
+                    args[4] = wallBlocked and CFrame.new(math.huge, math.huge, math.huge) or CFrame.new(originPos, aimPos)
+                    args[5] = { [1] = { [1] = { Instance = head, Normal = Vector3.new(0,1,0), Position = aimPos }}}
+                end
+                pcall(function()
+                    local beam = Instance.new("Part")
+                    beam.Anchored = true; beam.CanCollide = false
+                    beam.Size = Vector3.new(0.06, 0.06, (aimPos - originPos).Magnitude)
+                    beam.CFrame = CFrame.new(originPos, aimPos) * CFrame.new(0, 0, -beam.Size.Z/2)
+                    beam.Material = Enum.Material.Neon; beam.Transparency = 0.35
+                    beam.Color = Color3.fromRGB(255, 0, 0); beam.Parent = Workspace
+                    Debris:AddItem(beam, 4)
+                end)
+            end
+        end
+        return originalFireServer(self, unpack(args))
+    end)
+end)
 
 -- ══════════════════════════════════════════════════════════════
 --  SNAP UNDER MAP
@@ -1434,11 +1482,67 @@ local Window = WindUI:CreateWindow({
     Theme       = "Dark",
     Transparent = true,
     Resizable   = true,
-    Minimized   = true,
+    Minimized   = false,
     KeyCode     = Enum.KeyCode.G,
 })
 Window:Tag({ Title = "v2.2", Color = Color3.fromHex("#ff3366"), Radius = 12 })
-Window:EditOpenButton({ Enabled = true })
+Window:EditOpenButton({ Enabled = false })
+
+-- ══════════════════════════════════════════════════════════════
+--  BOTÓN FLOTANTE (IMAGEN PERSONALIZADA)
+-- ══════════════════════════════════════════════════════════════
+local ToggleScreenGui = Instance.new("ScreenGui")
+ToggleScreenGui.Name = "MortyHub_Toggle"
+ToggleScreenGui.ResetOnSpawn = false
+ToggleScreenGui.Parent = CoreGui
+
+local ToggleBtn = Instance.new("ImageButton")
+ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
+ToggleBtn.Position = UDim2.new(0, 20, 0.5, -25)
+ToggleBtn.BackgroundTransparency = 1
+ToggleBtn.BorderSizePixel = 0
+ToggleBtn.Image = "rbxassetid://3926305904""   -- ¡Cambiada a tu imagen!
+ToggleBtn.Active = true
+ToggleBtn.Draggable = true
+ToggleBtn.Parent = ToggleScreenGui
+
+local BtnStroke = Instance.new("UIStroke")
+BtnStroke.Thickness = 2
+BtnStroke.Color = Color3.fromRGB(255, 255, 255)
+BtnStroke.Transparency = 0.2
+BtnStroke.Parent = ToggleBtn
+
+local BtnCorner = Instance.new("UICorner")
+BtnCorner.CornerRadius = UDim.new(0, 12)
+BtnCorner.Parent = ToggleBtn
+
+local opened = true
+
+local function toggleUI()
+    opened = not opened
+    if Window.UI then
+        Window.UI.Enabled = opened
+    else
+        Window:Toggle()
+    end
+end
+
+ToggleBtn.MouseButton1Click:Connect(function()
+    ToggleBtn:TweenSize(
+        UDim2.new(0, 56, 0, 56),
+        Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.12, true,
+        function()
+            ToggleBtn:TweenSize(UDim2.new(0, 50, 0, 50), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.12, true)
+        end
+    )
+    toggleUI()
+end)
+
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.T then toggleUI() end
+end)
+
 -- ══════════════════════════════════════════════════════════════
 --  WINDUI CONFIGURATION
 -- ══════════════════════════════════════════════════════════════
