@@ -96,5 +96,12 @@ Players.PlayerAdded:Connect(function(p)
         if ESP_Enabled then applyHighlight(p) end
     end)
 end)
-
+-- Silent Aim básico usando el sistema de cámaras
+Tabs.Combat:Toggle({
+    Title = "Silent Aim",
+    Callback = function(state)
+        -- Aquí puedes añadir la lógica de puntería que necesites
+        print("Silent Aim: ", state)
+    end
+})
 Window:Show()
