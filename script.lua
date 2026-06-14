@@ -31,6 +31,7 @@ do
     end
     WindUI = result
 end
+
 local _itemRarityCache = {}
 local function _buildRarityCache()
     _itemRarityCache = {}
