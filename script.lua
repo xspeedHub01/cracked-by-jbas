@@ -13,41 +13,6 @@ local Window = WindUI:CreateWindow({
     Author = "JBAS", 
     Folder = "JBAS HUB" 
 })
-
-local _itemRarityCache = {}
-local function _buildRarityCache()
-    _itemRarityCache = {}
-    for _, folder in ipairs(workspace:FindFirstChild("DroppedItems
-"):GetChildren()) do
-        if folder:IsA("Folder") then
-            for _, item in ipairs(folder:GetChildren()) do
-                _itemRarityCache[item.Name] = item:GetAttribute("RarityName") or "Common"
-            end
-        end
-    end
-end
-_buildRarityCache()
-
-local function getRarityColorForDrop(model)
-    if model.Name == "Money" then return Color3.fromRGB(0,255,0) end
-    local rarity = _itemRarityCache[model.Name]
-    if not rarity then return Color3.fromRGB(255,255,255) end
-    return RarityColors[rarity] or Color3.fromRGB(255,255,255)
-end
-
-local function cleanupItemDrawings()
-    for model, data in pairs(itemDrawings) do
-        if not model or not model.Parent then
-            pcall(function() data.circle:Remove() end)
-            pcall(function() data.innerCircle:Remove() end)
-            pcall(function() data.name:Remove() end)
-            pcall(function() data.amount:Remove() end)
-            if data.highlight then data.highlight:Destroy() end
-            itemDrawings[model] = nil
-        end
-    end
-end
-
 -- 
 local Window = WindUI:CreateWindow({
     Title       = "JBAS | Block Spin",
