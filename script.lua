@@ -1432,67 +1432,11 @@ local Window = WindUI:CreateWindow({
     Theme       = "Dark",
     Transparent = true,
     Resizable   = true,
-    Minimized   = false,
+    Minimized   = true,
     KeyCode     = Enum.KeyCode.G,
 })
 Window:Tag({ Title = "v2.2", Color = Color3.fromHex("#ff3366"), Radius = 12 })
-Window:EditOpenButton({ Enabled = false })
-
--- ══════════════════════════════════════════════════════════════
---  BOTÓN FLOTANTE (IMAGEN PERSONALIZADA)
--- ══════════════════════════════════════════════════════════════
-local ToggleScreenGui = Instance.new("ScreenGui")
-ToggleScreenGui.Name = "MortyHub_Toggle"
-ToggleScreenGui.ResetOnSpawn = false
-ToggleScreenGui.Parent = CoreGui
-
-local ToggleBtn = Instance.new("ImageButton")
-ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
-ToggleBtn.Position = UDim2.new(0, 20, 0.5, -25)
-ToggleBtn.BackgroundTransparency = 1
-ToggleBtn.BorderSizePixel = 0
-ToggleBtn.Image = "rbxassetid://3926305904""   -- ¡Cambiada a tu imagen!
-ToggleBtn.Active = true
-ToggleBtn.Draggable = true
-ToggleBtn.Parent = ToggleScreenGui
-
-local BtnStroke = Instance.new("UIStroke")
-BtnStroke.Thickness = 2
-BtnStroke.Color = Color3.fromRGB(255, 255, 255)
-BtnStroke.Transparency = 0.2
-BtnStroke.Parent = ToggleBtn
-
-local BtnCorner = Instance.new("UICorner")
-BtnCorner.CornerRadius = UDim.new(0, 12)
-BtnCorner.Parent = ToggleBtn
-
-local opened = true
-
-local function toggleUI()
-    opened = not opened
-    if Window.UI then
-        Window.UI.Enabled = opened
-    else
-        Window:Toggle()
-    end
-end
-
-ToggleBtn.MouseButton1Click:Connect(function()
-    ToggleBtn:TweenSize(
-        UDim2.new(0, 56, 0, 56),
-        Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.12, true,
-        function()
-            ToggleBtn:TweenSize(UDim2.new(0, 50, 0, 50), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.12, true)
-        end
-    )
-    toggleUI()
-end)
-
-UserInputService.InputBegan:Connect(function(input, gp)
-    if gp then return end
-    if input.KeyCode == Enum.KeyCode.T then toggleUI() end
-end)
-
+Window:EditOpenButton({ Enabled = true })
 -- ══════════════════════════════════════════════════════════════
 --  WINDUI CONFIGURATION
 -- ══════════════════════════════════════════════════════════════
