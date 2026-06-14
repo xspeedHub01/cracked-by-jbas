@@ -1,11 +1,3 @@
-
-local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/init.lua"))()
-local Window = WindUI:CreateWindow({ 
-    Title = "JBAS HUB", 
-    Icon = "rbxassetid://12345678", -- Cambia por tu ID
-    Author = "JBAS", 
-    Folder = "JBAS HUB" 
-})
 -- 
 local Window = WindUI:CreateWindow({
     Title       = "JBAS | Block Spin",
