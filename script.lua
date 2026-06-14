@@ -1,8 +1,16 @@
--- Leaked by Cypher | https://discord.gg/b8QsvrMCNq
+-- Carga obligatoria de la librería WindUI
+local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/main.lua"))()
 
-
--- ============================================================
-
+-- Inicialización de la ventana (Ajusta el título y tamaño según prefieras)
+local Window = WindUI:CreateWindow({
+    Title = "Morty Hub v2.6",
+    Icon = "rbxassetid://10723343468", -- Puedes cambiar este ID
+    Author = "Cypher",
+    Size = UDim2.fromOffset(550, 400),
+    Folder = "MortyHub",
+    Transparent = true,
+    Theme = "Dark"
+})
 
 -- ══════════════════════════════════════════════════════════════
 --  SERVICES
@@ -37,16 +45,7 @@ pcall(function() CrateController = require(ReplicatedStorage.Modules.Game.CrateS
 -- ── Local Player ──────────────────────────────────────────────
 print("Morty Hub Leaked by Cypher https://discord.gg/b8QsvrMCNq")
 
--- -- FIX PARA DELTA
-pcall (function()
-game:GetService("Script-Context").SetTimeout(0.2)
-end)
--- Optimización extra para Delta (Evita crasheos por hilos de ejecución)
-if typeof(setfpscap) ==
-"function" then
-setfpscap (60)
-end
-6:19
+-- FIX PARA DELTA (agrega aquí)
 pcall(function() game:GetService("ScriptContext"):SetTimeout(0.2) end)
 
 local HttpService = game:GetService("HttpService")
@@ -181,6 +180,118 @@ pcall(function()
     end
 end)
 
+-- ══════════════════════════════════════════════════════════════
+--  FPS BOOST MEJORADO
+-- ══════════════════════════════════════════════════════════════
+local fpsBoostOriginals = {}
+
+local function applyFpsBoost()
+    local Lighting = game:GetService("Lighting")
+    local Terrain = Workspace.Terrain
+
+    fpsBoostOriginals.GlobalShadows   = Lighting.GlobalShadows
+    fpsBoostOriginals.ShadowSoftness  = Lighting.ShadowSoftness
+    fpsBoostOriginals.FogEnd          = Lighting.FogEnd
+    fpsBoostOriginals.FogStart        = Lighting.FogStart
+    fpsBoostOriginals.Brightness      = Lighting.Brightness
+    fpsBoostOriginals.AmbientColor    = Lighting.Ambient
+    fpsBoostOriginals.ClockTime       = Lighting.ClockTime
+    fpsBoostOriginals.GlobalWind      = Workspace.GlobalWind
+    fpsBoostOriginals.WaterWaveSpeed  = Terrain.WaterWaveSpeed
+    fpsBoostOriginals.WaterReflectance = Terrain.WaterReflectance
+    fpsBoostOriginals.Decoration      = Terrain.Decoration
+    fpsBoostOriginals.effects         = {}
+    fpsBoostOriginals.parts           = {}
+    fpsBoostOriginals.particles       = {}
+    fpsBoostOriginals.textures        = {}
+    fpsBoostOriginals.fidelity        = {}
+
+    Lighting.GlobalShadows  = false
+    Lighting.ShadowSoftness = 0
+    Lighting.FogEnd   = 100000
+    Lighting.FogStart = 100000
+    Lighting.Brightness = 0.4
+    Lighting.Ambient = Color3.fromRGB(60,60,60)
+    Lighting.ClockTime = 10
+    Workspace.GlobalWind = Vector3.zero
+    Terrain.WaterWaveSpeed = 0
+    Terrain.WaterReflectance = 0
+    Terrain.Decoration = false
+
+    for _, obj in ipairs(Lighting:GetDescendants()) do
+        if obj:IsA("PostEffect") or obj:IsA("Atmosphere") or obj:IsA("Sky") or obj:IsA("BloomEffect") or obj:IsA("BlurEffect") or obj:IsA("ColorCorrectionEffect") or obj:IsA("DepthOfFieldEffect") or obj:IsA("SunRaysEffect") then
+            fpsBoostOriginals.effects[obj] = obj.Enabled
+            pcall(function() obj.Enabled = false end)
+        end
+    end
+    pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 end)
+    pcall(function() settings().Rendering.EagerBulkExecution = true end)
+    pcall(function() Workspace.StreamingEnabled = true end)
+
+    for _, v in ipairs(Workspace:GetDescendants()) do
+        if v:IsA("BasePart") then
+            fpsBoostOriginals.parts[v] = v.CastShadow
+            pcall(function() v.CastShadow = false end)
+            pcall(function() v.RenderFidelity = Enum.RenderFidelity.Performance end)
+            if v:IsA("MeshPart") then
+                pcall(function() sethiddenproperty(v, "LevelOfDetail", 0) end)
+            end
+        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Sparkles") or v:IsA("Fire") then
+            fpsBoostOriginals.particles[v] = v.Enabled
+            pcall(function() v.Enabled = false end)
+            if v:IsA("ParticleEmitter") then
+                pcall(function() v.Rate = 0 end)
+                pcall(function() v.LightEmission = 0 end)
+            end
+        elseif v:IsA("Decal") or v:IsA("Texture") or v:IsA("SurfaceAppearance") then
+            fpsBoostOriginals.textures[v] = v.Transparency
+            pcall(function() v.Transparency = 1 end)
+        elseif v:IsA("SpecialMesh") then
+            fpsBoostOriginals.fidelity[v] = v.Scale
+            pcall(function() v.Scale = v.Scale * Vector3.new(1,1,1) end)
+        end
+    end
+
+    for _, gui in ipairs(Workspace:GetDescendants()) do
+        if gui:IsA("SurfaceGui") then
+            pcall(function() gui.Enabled = false end)
+        end
+    end
+
+    local fpsCap = 144
+    pcall(function() setfpscap(fpsCap) end)
+    pcall(function() syn.setfpscap(fpsCap) end)
+    pcall(function() fluxus.setfpscap(fpsCap) end)
+end
+
+local function removeFpsBoost()
+    local Lighting = game:GetService("Lighting")
+    local Terrain = Workspace.Terrain
+
+    if fpsBoostOriginals.GlobalShadows  ~= nil then Lighting.GlobalShadows  = fpsBoostOriginals.GlobalShadows end
+    if fpsBoostOriginals.ShadowSoftness ~= nil then Lighting.ShadowSoftness = fpsBoostOriginals.ShadowSoftness end
+    if fpsBoostOriginals.FogEnd   ~= nil then Lighting.FogEnd   = fpsBoostOriginals.FogEnd end
+    if fpsBoostOriginals.FogStart ~= nil then Lighting.FogStart = fpsBoostOriginals.FogStart end
+    if fpsBoostOriginals.Brightness ~= nil then Lighting.Brightness = fpsBoostOriginals.Brightness end
+    if fpsBoostOriginals.AmbientColor ~= nil then Lighting.Ambient = fpsBoostOriginals.AmbientColor end
+    if fpsBoostOriginals.ClockTime ~= nil then Lighting.ClockTime = fpsBoostOriginals.ClockTime end
+    if fpsBoostOriginals.GlobalWind ~= nil then Workspace.GlobalWind = fpsBoostOriginals.GlobalWind end
+    if fpsBoostOriginals.WaterWaveSpeed ~= nil then Terrain.WaterWaveSpeed = fpsBoostOriginals.WaterWaveSpeed end
+    if fpsBoostOriginals.WaterReflectance ~= nil then Terrain.WaterReflectance = fpsBoostOriginals.WaterReflectance end
+    if fpsBoostOriginals.Decoration ~= nil then Terrain.Decoration = fpsBoostOriginals.Decoration end
+
+    if fpsBoostOriginals.effects then for obj, v in pairs(fpsBoostOriginals.effects) do pcall(function() obj.Enabled = v end) end end
+    if fpsBoostOriginals.particles then for v, e in pairs(fpsBoostOriginals.particles) do pcall(function() v.Enabled = e end) end end
+    if fpsBoostOriginals.textures then for v, t in pairs(fpsBoostOriginals.textures) do pcall(function() v.Transparency = t end) end end
+    if fpsBoostOriginals.parts then for v, c in pairs(fpsBoostOriginals.parts) do pcall(function() v.CastShadow = c end) end end
+    if fpsBoostOriginals.fidelity then for v, f in pairs(fpsBoostOriginals.fidelity) do pcall(function() if v:IsA("MeshPart") then v.RenderFidelity = f end end) end end
+
+    pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic end)
+    pcall(function() setfpscap(60) end)
+    pcall(function() syn.setfpscap(60) end)
+    pcall(function() fluxus.setfpscap(60) end)
+    fpsBoostOriginals = {}
+end
 
 -- ══════════════════════════════════════════════════════════════
 --  UTILITY
@@ -365,6 +476,60 @@ local function hideTracers()
     redLine.Visible = false
 end
 
+-- ══════════════════════════════════════════════════════════════
+--  SILENT AIM HOOK
+-- ══════════════════════════════════════════════════════════════
+local SendRemote = Remotes:WaitForChild("Send")
+local originalFireServer
+pcall(function()
+    originalFireServer = hookfunction(SendRemote.FireServer, function(self, ...)
+        if self ~= SendRemote then return originalFireServer(self, ...) end
+        local args = { ... }
+        if silentAimEnabled and args[2] == "shoot_gun" and aimTarget and aimTarget.Character then
+            local head = aimTarget.Character:FindFirstChild("Head")
+            local root = aimTarget.Character:FindFirstChild("HumanoidRootPart")
+            local hum  = aimTarget.Character:FindFirstChild("Humanoid")
+            if head and root and hum then
+                local aimPos = predictPosition(head, root)
+                local myHead = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Head")
+                local originPos = myHead and myHead.Position or Camera.CFrame.Position
+                local function isShotgun()
+                    if not Character then return false end
+                    for _, tool in ipairs(Character:GetChildren()) do
+                        if tool:IsA("Tool") then
+                            local ammo = tool:GetAttribute("AmmoType")
+                            if ammo == "shotgun" or ammo == "shootgun" then return true end
+                        end
+                    end
+                    return false
+                end
+                if isShotgun() then
+                    args[4] = CFrame.new(originPos, aimPos)
+                    local pellets = {}
+                    for i = 1, 6 do
+                        local spread = Vector3.new(math.random(-2,2)*0.03, math.random(-2,2)*0.03, math.random(-2,2)*0.03)
+                        table.insert(pellets, { [1] = { Instance = head, Normal = Vector3.new(0,1,0), Position = aimPos + spread }})
+                    end
+                    args[5] = pellets
+                else
+                    local wallBlocked = isBehindWall(originPos, aimPos)
+                    args[4] = wallBlocked and CFrame.new(math.huge, math.huge, math.huge) or CFrame.new(originPos, aimPos)
+                    args[5] = { [1] = { [1] = { Instance = head, Normal = Vector3.new(0,1,0), Position = aimPos }}}
+                end
+                pcall(function()
+                    local beam = Instance.new("Part")
+                    beam.Anchored = true; beam.CanCollide = false
+                    beam.Size = Vector3.new(0.06, 0.06, (aimPos - originPos).Magnitude)
+                    beam.CFrame = CFrame.new(originPos, aimPos) * CFrame.new(0, 0, -beam.Size.Z/2)
+                    beam.Material = Enum.Material.Neon; beam.Transparency = 0.35
+                    beam.Color = Color3.fromRGB(255, 0, 0); beam.Parent = Workspace
+                    Debris:AddItem(beam, 4)
+                end)
+            end
+        end
+        return originalFireServer(self, unpack(args))
+    end)
+end)
 
 -- ══════════════════════════════════════════════════════════════
 --  SNAP UNDER MAP
@@ -401,6 +566,26 @@ UserInputService.InputBegan:Connect(function(input, gp)
     end
 end)
 
+-- ══════════════════════════════════════════════════════════════
+--  BUMP AURA
+-- ══════════════════════════════════════════════════════════════
+local function bumpVehicles()
+    if not bumpAuraEnabled then return end
+    local root = HRP; if not root then return end
+    local vehicles = Workspace:FindFirstChild("Vehicles"); if not vehicles then return end
+    for _, vehicle in ipairs(vehicles:GetChildren()) do
+        if vehicle:IsA("Model") then
+            local primary = vehicle.PrimaryPart or vehicle:FindFirstChild("Chassis") or vehicle:FindFirstChild("HumanoidRootPart")
+            if primary and primary:IsA("BasePart") then
+                local dist = (primary.Position - root.Position).Magnitude
+                if dist < 15 then
+                    local dir = (primary.Position - root.Position).Unit
+                    primary:ApplyImpulse(dir * 80 + Vector3.new(0, 50, 0))
+                end
+            end
+        end
+    end
+end
 
 -- ══════════════════════════════════════════════════════════════
 --  ESP HACKERS
@@ -724,6 +909,126 @@ end
 startAutoAttack()
 
 -- ══════════════════════════════════════════════════════════════
+--  AUTO MINIGAME
+-- ══════════════════════════════════════════════════════════════
+local SliderModule
+pcall(function() SliderModule = require(ReplicatedStorage.Modules.Game.Minigames.SliderMinigame) end)
+local function clickMouse()
+    VirtualInputManager:SendMouseButtonEvent(0,0,0,true,game,0)
+    VirtualInputManager:SendMouseButtonEvent(0,0,0,false,game,0)
+end
+local function minigameLoop()
+    while autoMinigameEnabled do
+        task.wait(0.05)
+        if SliderModule and SliderModule.enabled and SliderModule.enabled.get() then
+            pcall(function() SliderModule.needle_pos.set(SliderModule.target_pos.get()) end)
+            clickMouse(); task.wait(0.01); clickMouse()
+        end
+    end
+end
+
+-- ══════════════════════════════════════════════════════════════
+--  SPECTATE
+-- ══════════════════════════════════════════════════════════════
+function startSpectate()
+    if spectateConn then pcall(function() spectateConn:Disconnect() end); spectateConn = nil end
+    if not spectateTarget or spectateTarget == "" then return end
+    local targetPlayer = Players:FindFirstChild(spectateTarget)
+    if not targetPlayer then return end
+    spectateConn = RunService.RenderStepped:Connect(function()
+        if not spectateEnabled or not spectateTarget then
+            if spectateConn then spectateConn:Disconnect(); spectateConn = nil end
+            return
+        end
+        local tp = Players:FindFirstChild(spectateTarget)
+        if tp and tp.Character then
+            local hum = tp.Character:FindFirstChildOfClass("Humanoid")
+            if hum then Camera.CameraSubject = hum; Camera.CameraType = Enum.CameraType.Custom end
+        end
+    end)
+end
+
+function stopSpectate()
+    if spectateConn then pcall(function() spectateConn:Disconnect() end); spectateConn = nil end
+    spectateTarget = nil
+    pcall(function()
+        Camera.CameraType = Enum.CameraType.Custom
+        local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then Camera.CameraSubject = hum end
+    end)
+end
+
+-- ══════════════════════════════════════════════════════════════
+--  HIDE NAME
+-- ══════════════════════════════════════════════════════════════
+local function applyHideNameToCharacter(char)
+    if not char then return end
+    task.wait(0.2)
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if root then
+        local billboard = root:FindFirstChild("CharacterBillboardGui")
+        if billboard then
+            local nameLabel = billboard:FindFirstChild("PlayerName")
+            if nameLabel and nameLabel:IsA("TextLabel") then
+                nameLabel.Visible = not hideNameEnabled
+            end
+        end
+    end
+end
+
+local function applyHideNameToCurrent()
+    local char = LocalPlayer.Character
+    if char then applyHideNameToCharacter(char) end
+end
+
+-- ══════════════════════════════════════════════════════════════
+--  MOVEMENT
+-- ══════════════════════════════════════════════════════════════
+local function setupHighJump(char)
+    if not jumpPowerEnabled then return end
+    local humanoid = char:WaitForChild("Humanoid")
+    humanoid.UseJumpPower = true; humanoid.JumpPower = 55
+    local conn = UserInputService.JumpRequest:Connect(function()
+        if not jumpPowerEnabled then return end
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end)
+    return conn
+end
+local jumpConn_HJ
+LocalPlayer.CharacterAdded:Connect(function(char)
+    if jumpPowerEnabled then
+        if jumpConn_HJ then pcall(function() jumpConn_HJ:Disconnect() end) end
+        jumpConn_HJ = setupHighJump(char)
+    end
+end)
+
+local staminaLoopRunning = false
+local function setupStamina()
+    pcall(function()
+        local SprintModule = require(ReplicatedStorage.Modules.Game.Sprint)
+        local sprintBar = getupvalue(SprintModule.consume_stamina, 2).sprint_bar
+        if sprintBar and not getgenv().OriginalSprintUpdate then
+            local origUpdate = sprintBar.update
+            sprintBar.update = function(...) return origUpdate(function() return 1 end) end
+            getgenv().OriginalSprintUpdate = origUpdate
+        end
+    end)
+    if staminaLoopRunning then return end
+    staminaLoopRunning = true
+    task.spawn(function()
+        while infiniteStaminaEnabled do
+            pcall(function() Send.send("set_sprinting_1", true) end)
+            task.wait(0.5)
+            if not infiniteStaminaEnabled then break end
+            pcall(function() Send.send("set_sprinting_1", false) end)
+            task.wait(0.1)
+        end
+        pcall(function() Send.send("set_sprinting_1", false) end)
+        staminaLoopRunning = false
+    end)
+end
+
+-- ══════════════════════════════════════════════════════════════
 --  AUTO PICKUP
 -- ══════════════════════════════════════════════════════════════
 task.spawn(function()
@@ -914,6 +1219,33 @@ RunService.Heartbeat:Connect(function(dt)
             end
             isFlickering = false
         end
+    end
+
+    -- ★ ANTI LOCK (optimizado: 10 Hz, velocidad 300)
+    if antiLockEnabled and _antiLockTimer >= 0.1 then
+        _antiLockTimer = 0
+        local char = LocalPlayer.Character
+        local root = char and char:FindFirstChild("HumanoidRootPart")
+        if root then
+            local oldVel = root.AssemblyLinearVelocity
+            local angle  = math.rad(tick() * 300 % 360)
+            root.AssemblyLinearVelocity = Vector3.new(
+                math.cos(angle) * 300,
+                math.random(50, 150),
+                math.sin(angle) * 300
+            )
+            task.defer(function()
+                if root and root.Parent then
+                    root.AssemblyLinearVelocity = oldVel
+                end
+            end)
+        end
+    end
+
+    -- Bump Aura (~10 Hz)
+    if _bumpTimer >= 0.1 then
+        _bumpTimer = 0
+        if bumpAuraEnabled then bumpVehicles() end
     end
 end)
 
@@ -1431,6 +1763,173 @@ GunsAmmoTab:Button({
     end
 })
 
+-- ── SPECTATE ──────────────────────────────────────────────────
+local SpectateTab = Window:Tab({ Title = "SPECTATE", Icon = "eye" })
+SpectateTab:Section({ Title = "SPECTATE" })
+
+local function getSpectatePlayerNames()
+    local names = {}
+    for _, p in ipairs(Players:GetPlayers()) do if p ~= LocalPlayer then table.insert(names, p.Name) end end
+    return names
+end
+
+local SpectateToggle = SpectateTab:Toggle({ Title = "Spectate Player", Default = false, Callback = function(v)
+    spectateEnabled = v
+    if v then startSpectate() else stopSpectate() end
+end })
+
+local SpectateDropdown = SpectateTab:Dropdown({
+    Title = "Select Player", Desc = "Selecciona el jugador a espectear",
+    Values = getSpectatePlayerNames(), Multi = false,
+    Callback = function(v)
+        spectateTarget = v
+        if spectateEnabled then startSpectate() end
+    end
+})
+
+Players.PlayerAdded:Connect(function() pcall(function() SpectateDropdown:Refresh(getSpectatePlayerNames(), true) end) end)
+Players.PlayerRemoving:Connect(function()
+    pcall(function() SpectateDropdown:Refresh(getSpectatePlayerNames(), true) end)
+    pcall(function()
+        if spectateTarget then
+            local still = Players:FindFirstChild(spectateTarget)
+            if not still then spectateEnabled = false; pcall(function() SpectateToggle:Set(false) end); stopSpectate() end
+        end
+    end)
+end)
+
+-- ── MISC ──────────────────────────────────────────────────────
+local MiscTab = Window:Tab({ Title = "MISC", Icon = "settings" })
+
+MiscTab:Section({ Title = "KEY INFO" })
+local KeyTimeBtn = MiscTab:Button({ Title = "Tiempo restante", Desc = "Calculando..." })
+task.spawn(function()
+    while true do
+        task.wait(1)
+        local secs = _keySecondsRemaining
+        if secs and secs > 0 then
+            pcall(function() KeyTimeBtn:SetDesc(formatTime(math.max(0, secs))) end)
+            _keySecondsRemaining = math.max(0, secs - 1)
+        else
+            pcall(function() KeyTimeBtn:SetDesc("Expirada") end)
+        end
+    end
+end)
+
+MiscTab:Divider()
+MiscTab:Section({ Title = "MONEY" })
+local BankBalance = MiscTab:Button({ Title = "🏦 Bank Balance", Desc = "N/A" })
+local HandBalance = MiscTab:Button({ Title = "💸 Hand Balance", Desc = "N/A" })
+
+local function HandMoney()
+    local topRight = PlayerGui:FindFirstChild("TopRightHud")
+    if topRight and topRight:FindFirstChild("Holder") then
+        local money = topRight.Holder:FindFirstChild("MoneyTextLabel")
+        if money then local val = money.Text:match("%$(%d+)"); return tonumber(val) or 0 end
+    end
+    return 0
+end
+local function ATMMoney()
+    for _, v in ipairs(PlayerGui:GetDescendants()) do
+        if v:IsA("TextLabel") and string.find(v.Text, "Bank Balance") then
+            local val = v.Text:match("%$(%d+)"); return tonumber(val) or 0
+        end
+    end
+    return 0
+end
+
+task.spawn(function()
+    while true do
+        BankBalance:SetDesc('<b><font color="#00FF00">$' .. (ATMMoney() or 0) .. "</font></b>")
+        HandBalance:SetDesc('<b><font color="#00f2ff">$' .. (HandMoney() or 0) .. "</font></b>")
+        task.wait(0.2)
+    end
+end)
+
+MiscTab:Divider()
+MiscTab:Section({ Title = "SERVERS" })
+local jobIdValue = ""
+MiscTab:Input({
+    Title       = "Server JobId",
+    Placeholder = "Pega el JobId aquí...",
+    Callback    = function(v) jobIdValue = (v or ""):gsub("%s+", "") end
+})
+MiscTab:Button({
+    Title    = "▶ Join by JobId",
+    Desc     = "Teleporta al servidor con el JobId pegado",
+    Callback = function()
+        local jid = (jobIdValue or ""):gsub("%s+", "")
+        if jid == "" then
+            WindUI:Notify({ Title = "❌ JobId vacío", Content = "Pega un JobId primero", Duration = 2 })
+            return
+        end
+        WindUI:Notify({ Title = "🔄 Conectando...", Content = jid, Duration = 2 })
+        local ok, err = pcall(function()
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, jid, LocalPlayer)
+        end)
+        if not ok then
+            WindUI:Notify({ Title = "❌ Error", Content = tostring(err):sub(1, 60), Duration = 4 })
+        end
+    end
+})
+MiscTab:Button({ Title = "Small Server (1-2 players)", Callback = function()
+    local best, cursor = nil, nil
+    for _=1,6 do
+        local url = "https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100"
+        if cursor then url = url.."&cursor="..cursor end
+        local ok, body = pcall(function() return game:HttpGet(url) end)
+        if not ok or not body then break end
+        local ok2, data = pcall(function() return HttpService:JSONDecode(body) end)
+        if not ok2 or not data or not data.data then break end
+        for _, srv in ipairs(data.data) do
+            if srv.id ~= game.JobId and srv.playing and srv.playing <= 2 then
+                if not best or srv.playing < best.playing then best = srv end
+            end
+        end
+        cursor = data.nextPageCursor; if not cursor then break end
+    end
+    if best then pcall(function() TeleportService:TeleportToPlaceInstance(game.PlaceId, best.id, LocalPlayer) end) end
+end })
+MiscTab:Button({ Title = "Server Hop", Desc = "Salta al servidor más lleno con espacio", Callback = function()
+    task.spawn(function()
+        local best, cursor = nil, nil
+        for _=1,6 do
+            local url = "https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Desc&limit=100"
+            if cursor then url = url.."&cursor="..cursor end
+            local ok, body = pcall(function() return game:HttpGet(url) end)
+            if not ok or not body then break end
+            local ok2, data = pcall(function() return HttpService:JSONDecode(body) end)
+            if not ok2 or not data or not data.data then break end
+            for _, srv in ipairs(data.data) do
+                if srv.id ~= game.JobId and srv.playing and srv.maxPlayers and srv.playing > 0 and (srv.playing+1) <= srv.maxPlayers then
+                    if not best or srv.playing > best.playing then best = srv end
+                end
+            end
+            cursor = data.nextPageCursor; if not cursor then break end
+        end
+        if best then
+            local slots = best.maxPlayers - best.playing
+            WindUI:Notify({ Title = "Server Hop", Content = best.playing.."/"..best.maxPlayers.." ("..slots.." libre"..(slots==1 and "" or "s")..")", Duration = 3 })
+            task.wait(1.5)
+            pcall(function() TeleportService:TeleportToPlaceInstance(game.PlaceId, best.id, LocalPlayer) end)
+        else
+            WindUI:Notify({ Title = "Server Hop", Content = "No se encontró servidor", Duration = 2 })
+        end
+    end)
+end })
+
+MiscTab:Divider()
+MiscTab:Section({ Title = "OTHER" })
+local SkipCrateToggle = MiscTab:Toggle({ Title = "Skip Crate Spin", Default = false, Callback = function(v) skipCrateEnabled = v end })
+local FpsBoostToggle  = MiscTab:Toggle({
+    Title = "FPS Boost", Desc = "Desactiva sombras y partículas para mejorar el FPS",
+    Default = false, Callback = function(v)
+        fpsBoostEnabled = v; if v then applyFpsBoost() else removeFpsBoost() end
+    end
+})
+Config:Register("SkipCrate", SkipCrateToggle)
+Config:Register("FpsBoost", FpsBoostToggle)
+
 -- ══════════════════════════════════════════════════════════════
 --  CONFIG TAB
 -- ══════════════════════════════════════════════════════════════
@@ -1468,7 +1967,9 @@ task.spawn(function()
     task.wait(1.5)
     Config:Load()
     applyHideNameToCurrent()
-    WindUI:Notify({ Title = "MortyHub", Content = "Configuración cargada automáticamente", Duration = 3 })
-end) applyHideNameToCurrent()
-    WindUI:Notify({ Title = "MortyHub", Content = "Configuración cargada automáticamente", Duration = 3 })
+    WindUI:Notify({ 
+        Title = "MortyHub", 
+        Content = "Configuración cargada automáticamente", 
+        Duration = 3 
+    })
 end)
