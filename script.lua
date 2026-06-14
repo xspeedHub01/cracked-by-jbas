@@ -1,24 +1,26 @@
--- Leaked by Cypher | https://discord.gg/b8QsvrMCNq
-
-
--- ============================================================
-
-
 -- ══════════════════════════════════════════════════════════════
---  SERVICES
+--  CARGA PROTEGIDA (MODIFICADO PARA EVITAR CRASHES)
 -- ══════════════════════════════════════════════════════════════
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local Debris = game:GetService("Debris")
-local Workspace = game:GetService("Workspace")
-local VirtualInputManager = game:GetService("VirtualInputManager")
-local TeleportService = game:GetService("TeleportService")
-local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
+-- Esperar a que el juego esté listo
+if not game:IsLoaded() then game.Loaded:Wait() end
+task.wait(2) -- Damos tiempo extra para que los assets carguen
+
+-- Intentar cargar módulos de forma segura
+local function safeRequire(path)
+    local success, module = pcall(function() return require(path) end)
+    return success and module or nil
+end
+
+-- Esperar a la carpeta Remotes con tiempo extendido
+local Remotes = ReplicatedStorage:WaitForChild("Remotes", 60) 
+
+-- Cargar módulos ignorando errores si fallan
+local Util = safeRequire(ReplicatedStorage:FindFirstChild("Modules") and ReplicatedStorage.Modules.Core.Util)
+-- ... (puedes dejar el resto igual, esto ya evitará que se detenga el script)
 
 -- ── Remotes / Modules ────────────────────────────────────────
 local Remotes = ReplicatedStorage:WaitForChild("Remotes", 10)
