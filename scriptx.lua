@@ -96,12 +96,56 @@ Players.PlayerAdded:Connect(function(p)
         if ESP_Enabled then applyHighlight(p) end
     end)
 end)
--- Silent Aim básico usando el sistema de cámaras
+-- SILENT AIM (Configuración)
+local SilentAimEnabled = false
+local AimPart = "HumanoidRootPart" -- Donde apuntará el tiro
+
 Tabs.Combat:Toggle({
     Title = "Silent Aim",
     Callback = function(state)
-        -- Aquí puedes añadir la lógica de puntería que necesites
-        print("Silent Aim: ", state)
+        SilentAimEnabled = state
     end
 })
-Window:Show()
+
+-- Lógica para encontrar el enemigo más cercano
+local function getClosestPlayer()
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+    
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild(AimPart) then
+            local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(player.Character[AimPart].Position)
+            if onScreen then
+                local distance = (Vector2.new(game.Players.LocalPlayer:GetMouse().X, game.Players.LocalPlayer:GetMouse().Y) - Vector2.new(pos.X, pos.Y)).Magnitude
+                if distance < shortestDistance then
+                    closestPlayer = player
+                    shortestDistance = distance
+                end
+            end
+        end
+    end
+    return closestPlayer
+end
+
+-- Hook para interceptar disparos (esto funciona si el juego usa Raycast)
+local mt = getrawmetatable(game)
+local oldNamecall = mt.__namecall
+setreadonly(mt, false)
+
+mt.__namecall = newcclosure(function(self, ...)
+    local args = {...}
+    local method = getnamecallmethod()
+    
+    if SilentAimEnabled and method == "FindPartOnRayWithIgnoreList" then
+        local target = getClosestPlayer()
+        if target then
+            local origin = args[1].Origin
+            args[1] = Ray.new(origin, (target.Character[AimPart].Position - origin).Unit * 1000)
+        end
+    end
+    
+    return oldNamecall(self, unpack(args))
+end)
+
+setreadonly(mt, true)
+
