@@ -1,3 +1,11 @@
+
+local RunService = game:GetService("RunService")
+local itemDrawings = {} -- Tabla para guardar los dibujos (círculos y nombres)
+local ESP_Enabled = false -- Estado inicial del ESP (apagado)
+
+-- Aquí deben ir tus variables que ya tenías: 'Items', 'RarityColors', etc.
+-- Asegúrate de que estén definidas antes de usarlas.
+
 local WindUI
 do
     local ok, result = pcall(function()
@@ -23,7 +31,40 @@ do
     end
     WindUI = result
 end
+local _itemRarityCache = {}
+local function _buildRarityCache()
+    _itemRarityCache = {}
+    for _, folder in ipairs(Items:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, item in ipairs(folder:GetChildren()) do
+                _itemRarityCache[item.Name] = item:GetAttribute("RarityName") or "Common"
+            end
+        end
+    end
+end
+_buildRarityCache()
 
+local function getRarityColorForDrop(model)
+    if model.Name == "Money" then return Color3.fromRGB(0,255,0) end
+    local rarity = _itemRarityCache[model.Name]
+    if not rarity then return Color3.fromRGB(255,255,255) end
+    return RarityColors[rarity] or Color3.fromRGB(255,255,255)
+end
+
+local function cleanupItemDrawings()
+    for model, data in pairs(itemDrawings) do
+        if not model or not model.Parent then
+            pcall(function() data.circle:Remove() end)
+            pcall(function() data.innerCircle:Remove() end)
+            pcall(function() data.name:Remove() end)
+            pcall(function() data.amount:Remove() end)
+            if data.highlight then data.highlight:Destroy() end
+            itemDrawings[model] = nil
+        end
+    end
+end
+
+-- 
 local Window = WindUI:CreateWindow({
     Title       = "JBAS | Block Spin",
     Icon        = "list",
