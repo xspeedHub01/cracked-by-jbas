@@ -35,7 +35,7 @@ end
 local _itemRarityCache = {}
 local function _buildRarityCache()
     _itemRarityCache = {}
-    for _, folder in ipairs(Items:GetChildren()) do
+    for _, folder in ipairs(workspace:FindFirstChild("Items"):GetChildren()) do
         if folder:IsA("Folder") then
             for _, item in ipairs(folder:GetChildren()) do
                 _itemRarityCache[item.Name] = item:GetAttribute("RarityName") or "Common"
