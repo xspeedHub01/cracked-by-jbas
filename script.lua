@@ -25,7 +25,7 @@ do
 end
 
 local Window = WindUI:CreateWindow({
-    Title       = "MORTY HUB | Block Spin",
+    Title       = "JBAS | Block Spin",
     Icon        = "list",
     Author      = "JBAS HUB",
     Folder      = "JBAS TEST",
