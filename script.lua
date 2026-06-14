@@ -1,16 +1,8 @@
--- Carga obligatoria de la librería WindUI
-local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/main.lua"))()
+-- Leaked by Cypher | https://discord.gg/b8QsvrMCNq
 
--- Inicialización de la ventana (Ajusta el título y tamaño según prefieras)
-local Window = WindUI:CreateWindow({
-    Title = "Morty Hub v2.6",
-    Icon = "rbxassetid://10723343468", -- Puedes cambiar este ID
-    Author = "Cypher",
-    Size = UDim2.fromOffset(550, 400),
-    Folder = "MortyHub",
-    Transparent = true,
-    Theme = "Dark"
-})
+
+-- ============================================================
+
 
 -- ══════════════════════════════════════════════════════════════
 --  SERVICES
@@ -1967,9 +1959,7 @@ task.spawn(function()
     task.wait(1.5)
     Config:Load()
     applyHideNameToCurrent()
-    WindUI:Notify({ 
-        Title = "MortyHub", 
-        Content = "Configuración cargada automáticamente", 
-        Duration = 3 
-    })
+    WindUI:Notify({ Title = "MortyHub", Content = "Configuración cargada automáticamente", Duration = 3 })
+end) applyHideNameToCurrent()
+    WindUI:Notify({ Title = "MortyHub", Content = "Configuración cargada automáticamente", Duration = 3 })
 end)
