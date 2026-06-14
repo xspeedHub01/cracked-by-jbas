@@ -19,7 +19,7 @@ do
         lbl.Size = UDim2.new(1,-16,1,0); lbl.Position = UDim2.new(0,8,0,0)
         lbl.BackgroundTransparency = 1; lbl.Font = Enum.Font.GothamBold; lbl.TextSize = 13
         lbl.TextColor3 = Color3.fromRGB(255,90,90); lbl.TextWrapped = true
-        lbl.Text = "⚠ MortyHub: No se pudo cargar la UI.\n" .. tostring(result)
+        lbl.Text = "⚠ jbas: No se pudo cargar la UI.\n" .. tostring(result)
         task.delay(8, function() pcall(function() errGui:Destroy() end) end)
         return
     end
