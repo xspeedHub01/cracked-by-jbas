@@ -43,26 +43,58 @@ local function getClosestPlayer()
     end
     return closest
 end
-
--- ESP
+-- ESP AVANZADO (Cajas + Distancia + Salud)
 local ESP_Enabled = false
+local RunService = game:GetService("RunService")
+
+-- Esta función crea la etiqueta de texto y la caja
+local function createESP(player)
+    local highlight = Instance.new("Highlight", player.Character)
+    highlight.Name = "EspHighlight"
+    highlight.FillColor = Color3.fromRGB(255, 50, 50)
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+    highlight.Enabled = ESP_Enabled
+
+    local billboard = Instance.new("BillboardGui", player.Character:FindFirstChild("HumanoidRootPart"))
+    billboard.Name = "EspInfo"
+    billboard.Size = UDim2.new(0, 200, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.AlwaysOnTop = true
+
+    local label = Instance.new("TextLabel", billboard)
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = Color3.new(1, 1, 1)
+    label.TextScaled = true
+    label.Font = Enum.Font.GothamBold
+
+    -- Actualizador en tiempo real
+    RunService.RenderStepped:Connect(function()
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            local dist = (LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+            label.Text = player.Name .. "\n" .. math.floor(dist) .. " studs | HP: " .. math.floor(player.Character.Humanoid.Health)
+        end
+    end)
+end
+
+-- Toggle en WindUI
 Tabs.Visual:Toggle({
-    Title = "Show ESP",
+    Title = "ESP Pro (Cajas + Info)",
     Callback = function(state)
         ESP_Enabled = state
         for _, p in pairs(Players:GetPlayers()) do
-            if p.Character then
-                local hl = p.Character:FindFirstChild("EspHighlight")
-                if hl then hl.Enabled = state 
-                elseif state then
-                    local h = Instance.new("Highlight", p.Character)
-                    h.Name = "EspHighlight"
-                    h.FillColor = Color3.fromRGB(255, 0, 0)
+            if p ~= LocalPlayer and p.Character then
+                if state then
+                    if not p.Character:FindFirstChild("EspHighlight") then createESP(p) end
+                    p.Character.EspHighlight.Enabled = true
+                elseif p.Character:FindFirstChild("EspHighlight") then
+                    p.Character.EspHighlight.Enabled = false
                 end
             end
         end
     end
 })
+
 
 -- SILENT AIM
 local SilentAimEnabled = false
