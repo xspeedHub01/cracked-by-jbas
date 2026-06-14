@@ -1887,4 +1887,8 @@ ConfigTab:Button({
     end
 })
 
-print("--- MORTY HUB: EL CEREBRO ESTÁ ACTIVO Y LISTO ---")
+print("--------------------------------------------------")
+print(" MORTY HUB CARGADO EXITOSAMENTE SIN INTERFAZ ")
+print("Jugador: " .. game.Players.LocalPlayer.Name)
+print("Estado: Activo y esperando comandos")
+print("--------------------------------------------------")
