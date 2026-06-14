@@ -38,3 +38,21 @@ local Window = WindUI:CreateWindow({
 })
 Window:Tag({ Title = "V1", Color = Color3.fromHex("#ff3366"), Radius = 12 })
 Window:EditOpenButton({ Enabled = true })
+-- Definición de pestañas con sección inicial de estado
+local Tabs = {
+    Combat    = Window:Tab({ Title = "Combat",    Icon = "sword" }),
+    Movement  = Window:Tab({ Title = "Movement",  Icon = "move" }),
+    Weapon    = Window:Tab({ Title = "Weapon",    Icon = "crosshair" }),
+    Visual    = Window:Tab({ Title = "Visual",    Icon = "eye" }),
+    Automatic = Window:Tab({ Title = "Automatic", Icon = "zap" }),
+    Ammo      = Window:Tab({ Title = "Guns ammo", Icon = "package" }),
+    Spectate  = Window:Tab({ Title = "Spectate",  Icon = "camera" }),
+    Misc      = Window:Tab({ Title = "Misc",      Icon = "settings" })
+}
+
+-- Añadimos un punto de estado/ubicación a cada una
+for name, tab in pairs(Tabs) do
+    tab:Section({ Title = "● Estás en: " .. name })
+end
+
+Window:Show()
