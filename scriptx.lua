@@ -96,56 +96,31 @@ Players.PlayerAdded:Connect(function(p)
         if ESP_Enabled then applyHighlight(p) end
     end)
 end)
--- SILENT AIM (Configuración)
+-- SILENT AIM USANDO EL MOTOR NET (Más estable y sin bloquear pantalla)
+local RS = game:GetService("ReplicatedStorage")
+local Net = require(RS.Modules.Core.Net)
 local SilentAimEnabled = false
-local AimPart = "HumanoidRootPart" -- Donde apuntará el tiro
 
 Tabs.Combat:Toggle({
-    Title = "Silent Aim",
+    Title = "Silent Aim (Net Hook)",
     Callback = function(state)
         SilentAimEnabled = state
     end
 })
 
--- Lógica para encontrar el enemigo más cercano
-local function getClosestPlayer()
-    local closestPlayer = nil
-    local shortestDistance = math.huge
-    
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild(AimPart) then
-            local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(player.Character[AimPart].Position)
-            if onScreen then
-                local distance = (Vector2.new(game.Players.LocalPlayer:GetMouse().X, game.Players.LocalPlayer:GetMouse().Y) - Vector2.new(pos.X, pos.Y)).Magnitude
-                if distance < shortestDistance then
-                    closestPlayer = player
-                    shortestDistance = distance
-                end
-            end
-        end
-    end
-    return closestPlayer
-end
-
--- Hook para interceptar disparos (esto funciona si el juego usa Raycast)
-local mt = getrawmetatable(game)
-local oldNamecall = mt.__namecall
-setreadonly(mt, false)
-
-mt.__namecall = newcclosure(function(self, ...)
+-- Interceptamos la función Fire del módulo Net
+local oldFire = Net.Fire
+Net.Fire = function(self, name, ...)
     local args = {...}
-    local method = getnamecallmethod()
     
-    if SilentAimEnabled and method == "FindPartOnRayWithIgnoreList" then
-        local target = getClosestPlayer()
+    -- Si el evento es de disparo, redirigimos al enemigo
+    if SilentAimEnabled and (name == "FireBullet" or name == "Shoot" or name == "Hit") then
+        local target = getClosestPlayer() -- Usando la misma función que ya tienes
         if target then
-            local origin = args[1].Origin
-            args[1] = Ray.new(origin, (target.Character[AimPart].Position - origin).Unit * 1000)
+            -- Aquí inyectamos la posición del objetivo en el paquete de red
+            args[1] = target.Character.HumanoidRootPart.Position
         end
     end
     
-    return oldNamecall(self, unpack(args))
-end)
-
-setreadonly(mt, true)
-
+    return oldFire(self, name, unpack(args))
+end
