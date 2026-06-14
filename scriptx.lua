@@ -96,11 +96,7 @@ Players.PlayerAdded:Connect(function(p)
         if ESP_Enabled then applyHighlight(p) end
     end)
 end)
--- SILENT AIM USANDO EL MOTOR NET (Más estable y sin bloquear pantalla)
-local RS = game:GetService("ReplicatedStorage")
-local Net = require(RS.Modules.Core.Net)
-local SilentAimEnabled = false
--- Esta función DEBE ir antes de Net.Fire para que el script la encuentre
+-- Necesitamos definir esto ANTES del Hook de Net
 local function getClosestPlayer()
     local closest, dist = nil, 9999
     for _, v in pairs(game.Players:GetPlayers()) do
@@ -116,6 +112,10 @@ local function getClosestPlayer()
     return closest
 end
 
+-- SILENT AIM USANDO EL MOTOR NET (Más estable y sin bloquear pantalla)
+-- SILENT AIM OPTIMIZADO
+local SilentAimEnabled = false
+
 Tabs.Combat:Toggle({
     Title = "Silent Aim (Net Hook)",
     Callback = function(state)
@@ -123,19 +123,30 @@ Tabs.Combat:Toggle({
     end
 })
 
--- Interceptamos la función Fire del módulo Net
-local oldFire = Net.Fire
-Net.Fire = function(self, name, ...)
-    local args = {...}
-    
-    -- Si el evento es de disparo, redirigimos al enemigo
-    if SilentAimEnabled and (name == "FireBullet" or name == "Shoot" or name == "Hit") then
-        local target = getClosestPlayer() -- Usando la misma función que ya tienes
-        if target then
-            -- Aquí inyectamos la posición del objetivo en el paquete de red
-            args[1] = target.Character.HumanoidRootPart.Position
+-- Usamos un pcall para asegurar que el módulo cargue sí o sí
+local success, Net = pcall(function() return require(game:GetService("ReplicatedStorage").Modules.Core.Net) end)
+
+if success and Net then
+    local oldFire = Net.Fire
+    Net.Fire = function(self, name, ...)
+        local args = {...}
+        
+        -- Verificamos si es un evento de disparo
+        if SilentAimEnabled and (name == "FireBullet" or name == "Shoot" or name == "Hit") then
+            local target = getClosestPlayer()
+            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                -- ESTE ES EL CAMBIO CLAVE: 
+                -- Algunos juegos usan la posición en args[1], otros en args[2].
+                -- Si args[1] es un objeto, intenta cambiar la propiedad Position.
+                if typeof(args[1]) == "Vector3" then
+                    args[1] = target.Character.HumanoidRootPart.Position
+                elseif typeof(args[1]) == "table" and args[1].Position then
+                    args[1].Position = target.Character.HumanoidRootPart.Position
+                end
+            end
         end
+        return oldFire(self, name, unpack(args))
     end
-    
-    return oldFire(self, name, unpack(args))
+else
+    warn("No se pudo hookear el módulo Net")
 end
