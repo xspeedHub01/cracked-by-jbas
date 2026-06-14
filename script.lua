@@ -103,6 +103,17 @@ local TabVisual = Window:Tab({
     Title = "VISUAL",
     Icon = "eye" -- Icono de ojo
 })
+-- Añade el toggle del ESP aquí mismo:
+local DroppedToggle = VisualTab:Toggle({ 
+    Title = "Dropped Items ESP", 
+    Default = false, 
+    Callback = function(v) 
+        ESP_Enabled = v -- 'ESP_Enabled' es la variable que definiste en la línea 4
+        if not v then
+            cleanupItemDrawings() -- Si lo apagas, limpiamos los círculos
+        end
+    end 
+})
 
 -- Pestaña de AUTO FARM
 local TabAutoFarm = Window:Tab({
@@ -121,3 +132,11 @@ local TabConfig = Window:Tab({
     Title = "CONFIG",
     Icon = "settings" -- Icono de tuerca
 })
+-- Motor del ESP: Se ejecuta constantemente
+RunService.RenderStepped:Connect(function()
+    if ESP_Enabled then
+        -- Aquí es donde ocurre la magia. 
+        -- Necesitas un bucle que recorra los items y cree los dibujos (Drawing.new).
+        -- Si quieres, puedo pasarte el código base para dibujar el círculo y nombre.
+    end
+end)
