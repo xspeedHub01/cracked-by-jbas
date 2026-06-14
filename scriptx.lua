@@ -55,41 +55,46 @@ for name, tab in pairs(Tabs) do
     tab:Section({ Title = "● Estás en: " .. name })
 end
 -- ESP LIMPITO Y FUNCIONAL
+-- ESP Funcional para WindUI
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
 local ESP_Enabled = false
 
+-- Función interna para resaltar
 local function applyHighlight(player)
+    if player == LocalPlayer then return end
     if player.Character and not player.Character:FindFirstChild("EspHighlight") then
         local hl = Instance.new("Highlight")
         hl.Name = "EspHighlight"
         hl.Parent = player.Character
-        hl.FillColor = Color3.fromRGB(255, 0, 0)
+        hl.FillColor = Color3.fromRGB(255, 0, 0) -- Rojo
         hl.FillTransparency = 0.5
         hl.Enabled = ESP_Enabled
     end
 end
 
+-- Toggle en WindUI
 Tabs.Visual:Toggle({
-    Title = "Show Highlight",
+    Title = "Show ESP",
     Callback = function(state)
         ESP_Enabled = state
         for _, p in pairs(Players:GetPlayers()) do
-            if p.Character then
-                if p.Character:FindFirstChild("EspHighlight") then
-                    p.Character.EspHighlight.Enabled = state
-                elseif state then
-                    applyHighlight(p)
-                end
+            if p.Character and p.Character:FindFirstChild("EspHighlight") then
+                p.Character.EspHighlight.Enabled = state
+            elseif p.Character and state then
+                applyHighlight(p)
             end
         end
     end
 })
 
+-- Detector de nuevos jugadores
 Players.PlayerAdded:Connect(function(p)
-    p.CharacterAdded:Connect(function(char)
+    p.CharacterAdded:Connect(function()
         if ESP_Enabled then applyHighlight(p) end
     end)
 end)
-
 
 Window:Show()
