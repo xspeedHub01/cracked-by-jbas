@@ -100,6 +100,21 @@ end)
 local RS = game:GetService("ReplicatedStorage")
 local Net = require(RS.Modules.Core.Net)
 local SilentAimEnabled = false
+-- Esta función DEBE ir antes de Net.Fire para que el script la encuentre
+local function getClosestPlayer()
+    local closest, dist = nil, 9999
+    for _, v in pairs(game.Players:GetPlayers()) do
+        if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+            local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
+            local mag = (Vector2.new(pos.X, pos.Y) - Vector2.new(workspace.CurrentCamera.ViewportSize.X/2, workspace.CurrentCamera.ViewportSize.Y/2)).Magnitude
+            if onScreen and mag < dist then
+                closest = v
+                dist = mag
+            end
+        end
+    end
+    return closest
+end
 
 Tabs.Combat:Toggle({
     Title = "Silent Aim (Net Hook)",
