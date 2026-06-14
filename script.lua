@@ -37,4 +37,4 @@ local Window = WindUI:CreateWindow({
     KeyCode     = Enum.KeyCode.G,
 })
 Window:Tag({ Title = "v2.2", Color = Color3.fromHex("#ff3366"), Radius = 12 })
-Window:EditOpenButton({ Enabled = false })
+Window:EditOpenButton({ Enabled = true })
