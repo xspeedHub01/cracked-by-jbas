@@ -49,3 +49,22 @@ LocalPlayer.CharacterAdded:Connect(function(newChar)
     Backpack = LocalPlayer:WaitForChild("Backpack")
     if hideNameEnabled then applyHideNameToCharacter(newChar) end
 end)
+-- ── CARGAR UI (WindUI) ──────────────────────────────────────────
+local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/init.lua"))()
+
+local Window = WindUI:CreateWindow({ 
+    Title = "JBAS HUB", 
+    Author = "JBAS", 
+    Folder = "JBAS_HUB_Settings" 
+})
+
+-- Creamos la pestaña Visual
+local VisualTab = Window:Tab({ Title = "Visual" })
+
+-- Aquí iría tu toggle (Ejemplo)
+VisualTab:Toggle({
+    Title = "ESP Items Dropeados",
+    Callback = function(state)
+        _G.ESP_Enabled = state -- Esta variable es la que usará tu motor de dibujo
+    end
+})
