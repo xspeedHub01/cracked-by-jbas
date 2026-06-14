@@ -37,7 +37,16 @@ pcall(function() CrateController = require(ReplicatedStorage.Modules.Game.CrateS
 -- ── Local Player ──────────────────────────────────────────────
 print("Morty Hub Leaked by Cypher https://discord.gg/b8QsvrMCNq")
 
--- FIX PARA DELTA (agrega aquí)
+-- -- FIX PARA DELTA
+pcall (function()
+game:GetService("Script-Context").SetTimeout(0.2)
+end)
+-- Optimización extra para Delta (Evita crasheos por hilos de ejecución)
+if typeof(setfpscap) ==
+"function" then
+setfpscap (60)
+end
+6:19
 pcall(function() game:GetService("ScriptContext"):SetTimeout(0.2) end)
 
 local HttpService = game:GetService("HttpService")
