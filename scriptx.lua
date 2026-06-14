@@ -54,38 +54,42 @@ local Tabs = {
 for name, tab in pairs(Tabs) do
     tab:Section({ Title = "● Estás en: " .. name })
 end
--- ESP Universal para la pestaña Visual
-local ESP_Enabled = false
-local RunService = game:GetService("RunService")
+-- ESP LIMPITO Y FUNCIONAL
 local Players = game:GetService("Players")
+local ESP_Enabled = false
 
-Tabs.Visual:Section({ Title = "ESP Settings" })
+local function applyHighlight(player)
+    if player.Character and not player.Character:FindFirstChild("EspHighlight") then
+        local hl = Instance.new("Highlight")
+        hl.Name = "EspHighlight"
+        hl.Parent = player.Character
+        hl.FillColor = Color3.fromRGB(255, 0, 0)
+        hl.FillTransparency = 0.5
+        hl.Enabled = ESP_Enabled
+    end
+end
 
 Tabs.Visual:Toggle({
-    Title = "Show ESP",
+    Title = "Show Highlight",
     Callback = function(state)
         ESP_Enabled = state
-    end
-})
-
--- Función interna del ESP
-RunService.RenderStepped:Connect(function()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local rootPart = player.Character.HumanoidRootPart
-            local vector, onScreen = workspace.CurrentCamera:WorldToViewportPoint(rootPart.Position)
-            
-            -- Aquí dibujaríamos si el ESP_Enabled es true
-            -- Nota: En móviles, dibujar cuadros complejos puede causar lag, 
-            -- pero esta lógica básica es la que alimenta cualquier ESP.
-            if ESP_Enabled and onScreen then
-                -- (Aquí iría la lógica de Drawing.new("Square"), 
-                -- pero para evitar que el script se cierre en Delta, 
-                -- empezaremos con un print de prueba)
-                -- print("ESP Activo para: " .. player.Name)
+        for _, p in pairs(Players:GetPlayers()) do
+            if p.Character then
+                if p.Character:FindFirstChild("EspHighlight") then
+                    p.Character.EspHighlight.Enabled = state
+                elseif state then
+                    applyHighlight(p)
+                end
             end
         end
     end
+})
+
+Players.PlayerAdded:Connect(function(p)
+    p.CharacterAdded:Connect(function(char)
+        if ESP_Enabled then applyHighlight(p) end
+    end)
 end)
+
 
 Window:Show()
