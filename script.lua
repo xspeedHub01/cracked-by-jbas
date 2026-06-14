@@ -110,6 +110,7 @@ TabCombat:Toggle({ Title = "Kill Aura", Callback = function(s) end })
 local fovRadius = 120
 local isMobile = UserInputService.TouchEnabled
 local fovCircle -- Esta variable guardará nuestro círculo
+local silentAimEnabled = false⁠
 
 -- 2. Creamos el FOV (Lógica que sacaste de la source)
 if not isMobile then
@@ -173,3 +174,56 @@ end })
 
 -- CONFIG
 TabConfig:Button({ Title = "Destroy UI", Callback = function() Window:Destroy() end })
+--  SILENT AIM HOOK
+-- ══════════════════════════════════════════════════════════════
+local SendRemote = Remotes:WaitForChild("Send")
+local originalFireServer
+pcall(function()
+    originalFireServer = hookfunction(SendRemote.FireServer, function(self, ...)
+        if self ~= SendRemote then return originalFireServer(self, ...) end
+        local args = { ... }
+        if silentAimEnabled and args[2] == "shoot_gun" and aimTarget and aimTarget.Character then
+            local head = aimTarget.Character:FindFirstChild("Head")
+            local root = aimTarget.Character:FindFirstChild("HumanoidRootPart")
+            local hum  = aimTarget.Character:FindFirstChild("Humanoid")
+            if head and root and hum then
+                local aimPos = predictPosition(head, root)
+                local myHead = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Head")
+                local originPos = myHead and myHead.Position or Camera.CFrame.Position
+                local function isShotgun()
+                    if not Character then return false end
+                    for _, tool in ipairs(Character:GetChildren()) do
+                        if tool:IsA("Tool") then
+                            local ammo = tool:GetAttribute("AmmoType")
+                            if ammo == "shotgun" or ammo == "shootgun" then return true end
+                        end
+                    end
+                    return false
+                end
+                if isShotgun() then
+                    args[4] = CFrame.new(originPos, aimPos)
+                    local pellets = {}
+                    for i = 1, 6 do
+                        local spread = Vector3.new(math.random(-2,2)*0.03, math.random(-2,2)*0.03, math.random(-2,2)*0.03)
+                        table.insert(pellets, { [1] = { Instance = head, Normal = Vector3.new(0,1,0), Position = aimPos + spread }})
+                    end
+                    args[5] = pellets
+                else
+                    local wallBlocked = isBehindWall(originPos, aimPos)
+                    args[4] = wallBlocked and CFrame.new(math.huge, math.huge, math.huge) or CFrame.new(originPos, aimPos)
+                    args[5] = { [1] = { [1] = { Instance = head, Normal = Vector3.new(0,1,0), Position = aimPos }}}
+                end
+                pcall(function()
+                    local beam = Instance.new("Part")
+                    beam.Anchored = true; beam.CanCollide = false
+                    beam.Size = Vector3.new(0.06, 0.06, (aimPos - originPos).Magnitude)
+                    beam.CFrame = CFrame.new(originPos, aimPos) * CFrame.new(0, 0, -beam.Size.Z/2)
+                    beam.Material = Enum.Material.Neon; beam.Transparency = 0.35
+                    beam.Color = Color3.fromRGB(255, 0, 0); beam.Parent = Workspace
+                    Debris:AddItem(beam, 4)
+                end)
+            end
+        end
+        return originalFireServer(self, unpack(args))
+    end)
+end)
