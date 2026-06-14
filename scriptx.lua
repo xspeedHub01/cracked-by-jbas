@@ -127,26 +127,33 @@ Tabs.Combat:Toggle({
 local success, Net = pcall(function() return require(game:GetService("ReplicatedStorage").Modules.Core.Net) end)
 
 if success and Net then
+    -- SILENT AIM DEFINITIVO (Copia esto tal cual)
+local SilentAimEnabled = false
+
+Tabs.Combat:Toggle({
+    Title = "Silent Aim (Net Hook)",
+    Callback = function(state)
+        SilentAimEnabled = state
+    end
+})
+
+local success, Net = pcall(function() return require(game:GetService("ReplicatedStorage").Modules.Core.Net) end)
+
+if success and Net then
     local oldFire = Net.Fire
     Net.Fire = function(self, name, ...)
         local args = {...}
         
-        -- Verificamos si es un evento de disparo
-        if SilentAimEnabled and (name == "FireBullet" or name == "Shoot" or name == "Hit") then
+        -- Si está activado, imprimimos para ver qué está pasando y forzamos el disparo
+        if SilentAimEnabled then
+            print("Disparo detectado, nombre: " .. tostring(name))
             local target = getClosestPlayer()
             if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-                -- ESTE ES EL CAMBIO CLAVE: 
-                -- Algunos juegos usan la posición en args[1], otros en args[2].
-                -- Si args[1] es un objeto, intenta cambiar la propiedad Position.
-                if typeof(args[1]) == "Vector3" then
-                    args[1] = target.Character.HumanoidRootPart.Position
-                elseif typeof(args[1]) == "table" and args[1].Position then
-                    args[1].Position = target.Character.HumanoidRootPart.Position
-                end
+                -- Cambiamos el destino (la mayoría de los juegos usan el primer argumento para el destino)
+                args[1] = target.Character.HumanoidRootPart.Position
             end
         end
+        
         return oldFire(self, name, unpack(args))
     end
-else
-    warn("No se pudo hookear el módulo Net")
 end
