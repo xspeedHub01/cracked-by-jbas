@@ -38,3 +38,48 @@ local Window = WindUI:CreateWindow({
 })
 Window:Tag({ Title = "v2.2", Color = Color3.fromHex("#ff3366"), Radius = 12 })
 Window:EditOpenButton({ Enabled = true })
+-- Pestañas del JBAS HUB
+local TabCombat     = Window:Tab({ Title = "Combat" })
+local TabMovement   = Window:Tab({ Title = "Movement" })
+local TabWeapon     = Window:Tab({ Title = "Weapon" })
+local TabVisual     = Window:Tab({ Title = "Visual" })
+local TabAutoFarm   = Window:Tab({ Title = "Auto Farm" })
+local TabGuns       = Window:Tab({ Title = "Guns" })
+local TabAmmo       = Window:Tab({ Title = "Ammo" })
+local TabSpectate   = Window:Tab({ Title = "Spectate" })
+local TabMisc       = Window:Tab({ Title = "Misc" })
+local TabConfig     = Window:Tab({ Title = "Config" })
+
+-- EJEMPLOS DE ESTRUCTURA (Para que te guíes)
+
+-- COMBAT
+TabCombat:Toggle({ Title = "Kill Aura", Callback = function(s) end })
+
+-- MOVEMENT
+TabMovement:Slider({ Title = "WalkSpeed", Min = 16, Max = 100, Callback = function(v) 
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v 
+end })
+
+-- WEAPON
+TabWeapon:Toggle({ Title = "Fast Attack", Callback = function(s) end })
+
+-- VISUAL
+TabVisual:Toggle({ Title = "ESP Box", Callback = function(s) end })
+
+-- AUTO FARM
+TabAutoFarm:Toggle({ Title = "Auto Farm Mobs", Callback = function(s) end })
+
+-- GUNS AMMO
+TabGuns:Toggle({ Title = "Silent Aim", Callback = function(s) end })
+
+
+-- SPECTATE
+TabSpectate:Button({ Title = "Spectate Random", Callback = function() end })
+
+-- MISC
+TabMisc:Button({ Title = "Rejoin", Callback = function() 
+    game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer) 
+end })
+
+-- CONFIG
+TabConfig:Button({ Title = "Destroy UI", Callback = function() Window:Destroy() end })
