@@ -35,7 +35,8 @@ end
 local _itemRarityCache = {}
 local function _buildRarityCache()
     _itemRarityCache = {}
-    for _, folder in ipairs(workspace:FindFirstChild("Items"):GetChildren()) do
+    for _, folder in ipairs(workspace:FindFirstChild("DroppedItems
+"):GetChildren()) do
         if folder:IsA("Folder") then
             for _, item in ipairs(folder:GetChildren()) do
                 _itemRarityCache[item.Name] = item:GetAttribute("RarityName") or "Common"
@@ -138,5 +139,20 @@ RunService.RenderStepped:Connect(function()
         -- Aquí es donde ocurre la magia. 
         -- Necesitas un bucle que recorra los items y cree los dibujos (Drawing.new).
         -- Si quieres, puedo pasarte el código base para dibujar el círculo y nombre.
+    end
+end)
+-- Motor de dibujo final
+game:GetService("RunService").RenderStepped:Connect(function()
+    if droppedESPEnabled then -- Esta variable se activa con tu toggle
+        local itemsFolder = workspace:FindFirstChild("DroppedItems")
+        if itemsFolder then
+            for _, item in pairs(itemsFolder:GetChildren()) do
+                -- Aquí tu lógica de dibujo: 
+                -- Si ya existe el dibujo, solo actualizas su posición
+                -- Si no existe, creas el 'Drawing' (círculo o texto)
+                -- (puedes usar la función 'createBillboardForDroppedItem' 
+                -- si la tienes definida en el resto del código)
+            end
+        end
     end
 end)
