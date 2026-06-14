@@ -1,36 +1,18 @@
-
+-- Definición de variables necesarias
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local itemDrawings = {} -- Tabla para guardar los dibujos (círculos y nombres)
-local ESP_Enabled = false -- Estado inicial del ESP (apagado)
+local LocalPlayer = Players.LocalPlayer
+local ESP_Enabled = false
+local itemDrawings = {}
 
--- Aquí deben ir tus variables que ya tenías: 'Items', 'RarityColors', etc.
--- Asegúrate de que estén definidas antes de usarlas.
-
-local WindUI
-do
-    local ok, result = pcall(function()
-        return loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
-    end)
-    if not ok or not result then
-        local pg = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
-        local errGui = Instance.new("ScreenGui", pg)
-        errGui.Name = "MortyHubError"; errGui.ResetOnSpawn = false
-        local bg = Instance.new("Frame", errGui)
-        bg.Size = UDim2.fromOffset(340, 80); bg.Position = UDim2.new(0.5,-170,0,20)
-        bg.BackgroundColor3 = Color3.fromRGB(20,10,10); bg.BorderSizePixel = 0
-        Instance.new("UICorner", bg).CornerRadius = UDim.new(0,10)
-        local stroke = Instance.new("UIStroke", bg)
-        stroke.Color = Color3.fromRGB(255,60,60); stroke.Thickness = 1.5
-        local lbl = Instance.new("TextLabel", bg)
-        lbl.Size = UDim2.new(1,-16,1,0); lbl.Position = UDim2.new(0,8,0,0)
-        lbl.BackgroundTransparency = 1; lbl.Font = Enum.Font.GothamBold; lbl.TextSize = 13
-        lbl.TextColor3 = Color3.fromRGB(255,90,90); lbl.TextWrapped = true
-        lbl.Text = "⚠ MortyHub: No se pudo cargar la UI.\n" .. tostring(result)
-        task.delay(8, function() pcall(function() errGui:Destroy() end) end)
-        return
-    end
-    WindUI = result
-end
+-- Carga la UI (esto es lo que mantiene tu menú vivo)
+local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/init.lua"))()
+local Window = WindUI:CreateWindow({ 
+    Title = "JBAS HUB", 
+    Icon = "rbxassetid://12345678", -- Cambia por tu ID
+    Author = "JBAS", 
+    Folder = "JBAS HUB" 
+})
 
 local _itemRarityCache = {}
 local function _buildRarityCache()
