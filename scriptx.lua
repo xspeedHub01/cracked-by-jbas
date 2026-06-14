@@ -40,3 +40,28 @@ local Window = WindUI:CreateWindow({
 })
 Window:Tag({ Title = "v2.2", Color = Color3.fromHex("#ff3366"), Radius = 12 })
 Window:EditOpenButton({ Enabled = true })
+-- ══════════════════════════════════════════════════════════════
+--  CREACIÓN DE PESTAÑAS (LIMPIO)
+-- ══════════════════════════════════════════════════════════════
+
+local Tabs = {
+    Combat    = Window:Tab({ Title = "Combat",    Icon = "sword" }),
+    Movement  = Window:Tab({ Title = "Movement",  Icon = "move" }),
+    Weapon    = Window:Tab({ Title = "Weapon",    Icon = "crosshair" }),
+    Visual    = Window:Tab({ Title = "Visual",    Icon = "eye" }),
+    Automatic = Window:Tab({ Title = "Automatic", Icon = "zap" }),
+    Ammo      = Window:Tab({ Title = "Guns Ammo", Icon = "package" }),
+    Spectate  = Window:Tab({ Title = "Spectate",  Icon = "camera" }),
+    Misc      = Window:Tab({ Title = "Misc",      Icon = "settings" })
+}
+
+-- Ejemplo de cómo añadir algo a una pestaña:
+Tabs.Combat:Section({ Title = "Kill Functions" })
+Tabs.Combat:Button({
+    Title = "Ejemplo: Kill All",
+    Callback = function() 
+        print("Botón presionado") 
+    end
+})
+
+Window:Show()
