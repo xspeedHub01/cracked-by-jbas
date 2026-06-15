@@ -23,13 +23,19 @@ local CoreGui = game:GetService("CoreGui")
 -- ── Remotes / Modules ────────────────────────────────────────
 local Remotes = ReplicatedStorage:WaitForChild("Remotes", 10)
 local Util, BuyPromptUI, EmotesUI, EmotesList, CoreUI, CharModule, Net, Items, MeleeItems, CrateController
-pcall(function() Util            = require(ReplicatedStorage.Modules.Core.Util) end)
+⁠
+--pcall(function() Util            = require(ReplicatedStorage.Modules.Core.Util) end)
 pcall(function() BuyPromptUI     = require(ReplicatedStorage.Modules.Game.UI.BuyPromptUI) end)
 pcall(function() EmotesUI        = require(ReplicatedStorage.Modules.Game.Emotes.EmotesUI) end)
 pcall(function() EmotesList      = require(ReplicatedStorage.Modules.Game.Emotes.EmotesList) end)
-pcall(function() CoreUI          = require(ReplicatedStorage.Modules.Core.UI) end)
-pcall(function() CharModule      = require(ReplicatedStorage.Modules.Core.Char) end)
-pcall(function() Net             = require(ReplicatedStorage.Modules.Core.Net) end)
+--pcall(function() CoreUI          = require(ReplicatedStorage.Modules.Core.UI) end)
+--pcall(function() CharModule      = require(ReplicatedStorage.Modules.Core.Char) end)
+--pcall(function() Net             = require(ReplicatedStorage.Modules.Core.Net) end)
+Util = {}
+CoreUI = {}
+CharModule = {}
+Net = {}
+
 pcall(function() Items           = ReplicatedStorage:WaitForChild("Items", 5) end)
 pcall(function() if Items then MeleeItems = Items:WaitForChild("melee", 5) end end)
 pcall(function() CrateController = require(ReplicatedStorage.Modules.Game.CrateSystem.Crate) end)
@@ -158,7 +164,7 @@ end)
 task.spawn(function() task.wait(0.5); setupInstantSell() end)
 
 pcall(function()
-    local UtilModule = require(ReplicatedStorage.Modules.Core.Util)
+   -- local UtilModule = require(ReplicatedStorage.Modules.Core.Util)
     if UtilModule.tween then
         local old_tween = UtilModule.tween
         UtilModule.tween = function(instance, tweenInfo, properties, ...)
